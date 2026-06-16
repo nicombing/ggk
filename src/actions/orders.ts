@@ -2,6 +2,8 @@
 
 import prisma from "@/lib/db"
 import { revalidatePath } from "next/cache"
+import path from "path"
+import { promises as fs } from "fs"
 
 export interface DbOrder {
   id: string
@@ -80,6 +82,7 @@ export async function createOrder(data: {
   price: string
   items: string[]
   missingFonts?: string[]
+  previewUrl?: string
 }) {
   const count = await prisma.order.count()
   const orderId = `ORD-${101 + count}`
@@ -122,6 +125,20 @@ export async function createOrder(data: {
       validation: true
     }
   })
+
+  // Save the converted file preview on the server for operator terminal downloads
+  if (data.previewUrl && data.previewUrl.startsWith("data:image/png;base64,")) {
+    const base64Data = data.previewUrl.replace(/^data:image\/png;base64,/, "")
+    const uploadDir = path.join(process.cwd(), "public", "converted")
+    try {
+      await fs.mkdir(uploadDir, { recursive: true })
+      const filePath = path.join(uploadDir, `${orderId}.png`)
+      await fs.writeFile(filePath, Buffer.from(base64Data, "base64"))
+      console.log(`Saved converted file for ${orderId} to ${filePath}`)
+    } catch (err) {
+      console.error("Failed to save converted file:", err)
+    }
+  }
 
   revalidatePath("/dashboard/ops")
   revalidatePath("/dashboard/customer")
