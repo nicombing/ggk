@@ -72,7 +72,13 @@ export async function POST(req: Request) {
     await fs.writeFile(inputFilePath, buffer)
 
     // Mock parsing some fonts from the uploaded file metadata to simulate real behavior
-    const mockExtractedFonts = Math.random() > 0.5 
+    // Using a deterministic hash based on filename so the required fonts don't randomly change on re-verification!
+    let fontHash = 0
+    for (let i = 0; i < filename.length; i++) {
+      fontHash = (fontHash << 5) - fontHash + filename.charCodeAt(i)
+      fontHash |= 0
+    }
+    const mockExtractedFonts = Math.abs(fontHash) % 2 === 0
       ? ['Arial', 'Montserrat', 'Comic Sans'] 
       : ['Helvetica', 'Poppins', 'Fira Code']
 

@@ -823,7 +823,10 @@ export default function CustomerDashboardClient({ session, initialOrders }: Cust
                                   ))}
                                 </div>
                                 
-                                {preFlightDetails?.missingFonts && preFlightDetails.missingFonts.length > 0 && (
+                                {preFlightDetails?.missingFonts && 
+                                  (Array.isArray(preFlightDetails.missingFonts) 
+                                    ? preFlightDetails.missingFonts.length > 0 
+                                    : preFlightDetails.missingFonts !== "None") && (
                                   <div className="space-y-3 mt-4 p-4 bg-amber-50/70 border border-amber-500/25 rounded-2xl shadow-sm text-left">
                                     <div className="flex gap-2">
                                       <AlertCircle size={16} className="text-amber-600 shrink-0 mt-0.5" />
