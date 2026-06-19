@@ -4,8 +4,13 @@ import { Pool } from "pg"
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefined }
 
+const connectionString = process.env.DATABASE_URL || ""
+const finalConnectionString = connectionString.includes("6543") && !connectionString.includes("pgbouncer=true")
+  ? `${connectionString}${connectionString.includes("?") ? "&" : "?"}pgbouncer=true`
+  : connectionString
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: finalConnectionString,
   ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : undefined
 })
 const adapter = new PrismaPg(pool)
