@@ -4,6 +4,7 @@ import path from "path"
 import { exec } from "child_process"
 import { promisify } from "util"
 import { performance } from "perf_hooks"
+import os from "os"
 import { ensureFontInstalled } from "@/lib/fontAutomator"
 import AdmZip from "adm-zip"
 import sizeOf from "image-size"
@@ -69,7 +70,7 @@ export async function POST(req: Request) {
     const fileSizeMB = (buffer.length / (1024 * 1024)).toFixed(3)
 
     // Ensure temp upload directory exists
-    const uploadDir = path.join(process.cwd(), "tmp_uploads")
+    const uploadDir = os.tmpdir()
     try {
       await fs.mkdir(uploadDir, { recursive: true })
     } catch (_) {}
@@ -86,6 +87,8 @@ export async function POST(req: Request) {
     // Analyze the raw binary file stream for embedded font definitions
     const extractedFonts = new Set<string>()
     let isZipParsed = false
+    let parsedWidthCm = 0
+    let parsedHeightCm = 0
 
     if (fileExtension === ".cdr") {
       try {
@@ -129,6 +132,26 @@ export async function POST(req: Request) {
                   extractedFonts.add(fontName)
                 }
               })
+            }
+
+            // Extract real dimensions from XML/SVG
+            if (parsedWidthCm === 0) {
+              const pageMatch = content.match(/width=["']([0-9\.]+)(mm|cm|in|px|pt)["']\s+height=["']([0-9\.]+)(mm|cm|in|px|pt)["']/i)
+              if (pageMatch) {
+                const w = parseFloat(pageMatch[1])
+                const wUnit = pageMatch[2].toLowerCase()
+                const h = parseFloat(pageMatch[3])
+                const hUnit = pageMatch[4].toLowerCase()
+                
+                const toCm = (val: number, unit: string) => {
+                  if (unit === 'mm') return val / 10;
+                  if (unit === 'in') return val * 2.54;
+                  if (unit === 'px' || unit === 'pt') return val * 0.02645833;
+                  return val;
+                }
+                parsedWidthCm = toCm(w, wUnit)
+                parsedHeightCm = toCm(h, hUnit)
+              }
             }
           }
         })
@@ -294,12 +317,16 @@ export async function POST(req: Request) {
         const dimensions = sizeOf(outBuffer as any)
         finalWidth = dimensions.width || 0
         finalHeight = dimensions.height || 0
-        finalResolution = `${finalWidth} x ${finalHeight} (sRGB)`
+        finalResolution = `${finalWidth}px x ${finalHeight}px`
+      } else if (fileExtension === ".cdr" && parsedWidthCm > 0) {
+        finalWidth = Math.round(parsedWidthCm * 37.795) // cm to pixels approx
+        finalHeight = Math.round(parsedHeightCm * 37.795)
+        finalResolution = `${parsedWidthCm.toFixed(1)}cm x ${parsedHeightCm.toFixed(1)}cm`
       } else {
         const dimensions = sizeOf(buffer as any)
         finalWidth = dimensions.width || 0
         finalHeight = dimensions.height || 0
-        finalResolution = `${finalWidth} x ${finalHeight} (sRGB)`
+        finalResolution = `${finalWidth}px x ${finalHeight}px`
       }
     } catch (e) {
       console.error("Failed to read image size:", e)
@@ -313,7 +340,7 @@ export async function POST(req: Request) {
         valid: true,
         dpi: 300,
         resolution: finalResolution,
-        dimensionsCm: "100cm x 58cm",
+        dimensionsCm: parsedWidthCm > 0 ? `${parsedWidthCm.toFixed(1)}cm x ${parsedHeightCm.toFixed(1)}cm` : "Unknown",
         background: "Transparent (0% alpha)",
         fileSize: `${fileSizeMB} MB`,
         conversionTime: `${totalDurationSeconds} seconds`,
