@@ -125,7 +125,7 @@ export default function CustomerDashboardClient({ session, initialOrders }: Cust
       setConversionStage("Format Check & Processing")
       
       // Route request to the local worker tunnel if specified, otherwise hit relative /api/validate-file
-      const workerUrl = process.env.NEXT_PUBLIC_LOCAL_WORKER_URL || ""
+      const workerUrl = (process.env.NEXT_PUBLIC_LOCAL_WORKER_URL || "").replace(/\/$/, "")
       const endpoint = `${workerUrl}/api/validate-file`
 
       const formData = new FormData()
@@ -133,7 +133,11 @@ export default function CustomerDashboardClient({ session, initialOrders }: Cust
       
       const res = await fetch(endpoint, {
         method: "POST",
-        body: formData
+        body: formData,
+        headers: {
+          "Bypass-Tunnel-Reminder": "true",
+          "ngrok-skip-browser-warning": "true"
+        }
       })
       
       const data = await res.json()
@@ -167,7 +171,11 @@ export default function CustomerDashboardClient({ session, initialOrders }: Cust
       const workerUrl = process.env.NEXT_PUBLIC_LOCAL_WORKER_URL || ""
       const res = await fetch(`${workerUrl}/api/upload-font`, {
         method: "POST",
-        body: formData
+        body: formData,
+        headers: {
+          "Bypass-Tunnel-Reminder": "true",
+          "ngrok-skip-browser-warning": "true"
+        }
       })
       
       const data = await res.json()
