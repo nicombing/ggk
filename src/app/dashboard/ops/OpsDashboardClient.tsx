@@ -24,7 +24,11 @@ import {
   ChevronRight,
   Info,
   Terminal,
-  Users
+  Users,
+  Image as ImageIcon,
+  FileImage,
+  Download,
+  Eye
 } from "lucide-react"
 
 type Role = "ADMIN" | "DISPATCHER" | "PACKER" | "OPERATOR" | "CUSTOMER"
@@ -358,10 +362,44 @@ export default function OpsDashboardClient({ initialRole, userName }: OpsDashboa
                         </div>
                       </div>
 
-                      {/* Payment Proof Simulator */}
-                      <div className="p-2.5 rounded-xl border border-dashed border-amber-500/30 bg-amber-50/50 text-center shadow-sm">
-                        <span className="text-[10px] font-black text-amber-600 block mb-1">STRUK_BAYAR_PROOF.PNG</span>
-                        <span className="text-[9px] text-slate-400 font-bold block">Uploaded 5 mins ago</span>
+                      {/* Files available to Operator */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between p-2 rounded-xl border border-slate-200 bg-slate-50 shadow-sm group">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 bg-amber-100 rounded-md flex items-center justify-center text-amber-600 shrink-0">
+                              <ImageIcon size={12} />
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-[10px] font-black text-neutral-dark leading-none">Bukti Transfer</span>
+                              <span className="text-[8px] text-slate-400 font-bold mt-0.5">JPEG / PNG</span>
+                            </div>
+                          </div>
+                          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                             <Button variant="outline" size="icon" className="w-6 h-6 rounded-lg text-slate-500 hover:text-primary hover:bg-primary/10 border-slate-200">
+                               <Eye size={12} />
+                             </Button>
+                             <Button variant="outline" size="icon" className="w-6 h-6 rounded-lg text-slate-500 hover:text-primary hover:bg-primary/10 border-slate-200" title="Download Bukti">
+                               <Download size={12} />
+                             </Button>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between p-2 rounded-xl border border-slate-200 bg-slate-50 shadow-sm group">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 bg-primary/10 rounded-md flex items-center justify-center text-primary shrink-0">
+                              <FileImage size={12} />
+                            </div>
+                            <div className="flex flex-col max-w-[120px]">
+                              <span className="text-[10px] font-black text-neutral-dark leading-none truncate" title={order.designName}>{order.designName.replace(/\.[^/.]+$/, "")}.png</span>
+                              <span className="text-[8px] text-primary font-black uppercase mt-0.5 tracking-widest">Smart Converted</span>
+                            </div>
+                          </div>
+                          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                             <Button variant="outline" size="icon" className="w-6 h-6 rounded-lg text-slate-500 hover:text-primary hover:bg-primary/10 border-slate-200" title="Download Print File">
+                               <Download size={12} />
+                             </Button>
+                          </div>
+                        </div>
                       </div>
 
                       {/* Action Trigger */}
