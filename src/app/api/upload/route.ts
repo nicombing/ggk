@@ -55,7 +55,7 @@ export async function POST(request: Request) {
         try {
           await execAsync(fontCmd);
           const svgContent = await fs.readFile(svgPath, 'utf8');
-          const matches = svgContent.matchAll(/font-family="([^"]+)"/g);
+          const matches = svgContent.matchAll(/font-family\s*[:=]\s*["']?([^"';]+)["']?/g);
           const fontSet = new Set<string>();
           for (const match of matches) {
             const fontName = match[1].split(',')[0].replace(/['"]/g, '').trim();
