@@ -780,7 +780,6 @@ export default function OpsDashboardClient({ initialRole, userName }: OpsDashboa
         </CardContent>
       </Card>
 
-    </div>
       {/* Bukti Transfer Viewer Modal */}
       {viewingBuktiFor && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
@@ -816,5 +815,6 @@ export default function OpsDashboardClient({ initialRole, userName }: OpsDashboa
           </div>
         </div>
       )}
+    </div>
   )
 }
