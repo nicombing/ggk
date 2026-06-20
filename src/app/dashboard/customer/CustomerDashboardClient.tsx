@@ -186,6 +186,8 @@ export default function CustomerDashboardClient({ session, initialOrders }: Cust
         dimensionsCm: `${width} x ${height}`,
         fileSize: `${data.fileSizeMb || 0} MB`,
         resolution: "300 DPI Export",
+        dpi: 300,
+        background: "Intact",
         conversionTime: `${(Date.now() - startTime) / 1000}s`,
         accuracyScore: "100%",
         appliedFonts: [],
@@ -893,8 +895,8 @@ export default function CustomerDashboardClient({ session, initialOrders }: Cust
                                     { label: "Font Status", val: preFlightDetails?.accuracyStatus, success: preFlightDetails?.accuracyScore === "100%" }
                                   ].map((b, i) => (
                                     <div key={i} className={`p-2.5 border rounded-xl ${b.success ? 'bg-slate-50 border-slate-200/60' : 'bg-amber-50 border-amber-200/60'} ${b.label === 'Font Status' ? 'col-span-2' : ''}`}>
-                                      <span className="text-[8px] text-slate-400 font-bold block leading-none">{b.label}</span>
-                                      <span className={`text-xs font-black mt-1 flex items-center gap-1 ${b.success ? 'text-secondary' : 'text-amber-600'}`}>
+                                      <span className="text-[10px] text-slate-400 font-bold block leading-none">{b.label}</span>
+                                      <span className={`text-sm font-black mt-1.5 flex items-center gap-1.5 ${b.success ? 'text-secondary' : 'text-amber-600'}`}>
                                         <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${b.success ? 'bg-emerald-500' : 'bg-amber-500'}`} />
                                         <span className={b.label === 'Font Status' ? '' : 'truncate'}>{b.val}</span>
                                       </span>
