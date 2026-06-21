@@ -211,6 +211,15 @@ export default function OpsDashboardClient({ initialRole, userName }: OpsDashboa
     addLog("State reset completed.")
   }
 
+  const downloadFile = (url: string, filename: string) => {
+    const a = document.createElement("a")
+    a.href = url
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+  }
+
   const handleDownloadMock = (filename: string) => {
     const canvas = document.createElement("canvas")
     canvas.width = 800
@@ -408,7 +417,7 @@ export default function OpsDashboardClient({ initialRole, userName }: OpsDashboa
                              <Button onClick={() => setViewingBuktiFor(order.id)} variant="outline" size="icon" className="w-6 h-6 rounded-lg text-slate-500 hover:text-primary hover:bg-primary/10 border-slate-200">
                                <Eye size={12} />
                              </Button>
-                             <Button onClick={() => order.paymentProofUrl ? window.open(order.paymentProofUrl, '_blank') : handleDownloadMock(`Bukti_Transfer_${order.id}.png`)} variant="outline" size="icon" className="w-6 h-6 rounded-lg text-slate-500 hover:text-primary hover:bg-primary/10 border-slate-200" title="Download Bukti">
+                             <Button onClick={() => order.paymentProofUrl ? downloadFile(order.paymentProofUrl, `Bukti_Transfer_${order.id}.png`) : handleDownloadMock(`Bukti_Transfer_${order.id}.png`)} variant="outline" size="icon" className="w-6 h-6 rounded-lg text-slate-500 hover:text-primary hover:bg-primary/10 border-slate-200" title="Download Bukti">
                                <Download size={12} />
                              </Button>
                           </div>
@@ -425,7 +434,7 @@ export default function OpsDashboardClient({ initialRole, userName }: OpsDashboa
                             </div>
                           </div>
                           <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                             <Button onClick={() => order.convertedFileUrl ? window.open(order.convertedFileUrl, '_blank') : handleDownloadMock(`${order.designName.replace(/\.[^/.]+$/, "")}_Converted.png`)} variant="outline" size="icon" className="w-6 h-6 rounded-lg text-slate-500 hover:text-primary hover:bg-primary/10 border-slate-200" title="Download Print File">
+                             <Button onClick={() => order.convertedFileUrl ? downloadFile(order.convertedFileUrl, `${order.designName.replace(/\.[^/.]+$/, "")}_Converted.png`) : handleDownloadMock(`${order.designName.replace(/\.[^/.]+$/, "")}_Converted.png`)} variant="outline" size="icon" className="w-6 h-6 rounded-lg text-slate-500 hover:text-primary hover:bg-primary/10 border-slate-200" title="Download Print File">
                                <Download size={12} />
                              </Button>
                           </div>
@@ -807,7 +816,7 @@ export default function OpsDashboardClient({ initialRole, userName }: OpsDashboa
               <Button onClick={() => setViewingBuktiFor(null)} variant="outline" className="flex-1 rounded-xl font-black">Tutup</Button>
               <Button onClick={() => {
                 const order = orders.find(o => o.id === viewingBuktiFor)
-                order?.paymentProofUrl ? window.open(order.paymentProofUrl, '_blank') : handleDownloadMock(`Bukti_Transfer_${viewingBuktiFor}.png`)
+                order?.paymentProofUrl ? downloadFile(order.paymentProofUrl, `Bukti_Transfer_${viewingBuktiFor}.png`) : handleDownloadMock(`Bukti_Transfer_${viewingBuktiFor}.png`)
               }} className="flex-1 rounded-xl bg-primary hover:bg-secondary text-white font-black">
                 <Download size={16} className="mr-2" /> Download
               </Button>
